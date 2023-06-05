@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 reaction_mechanism = 'nDodecane_Reitz.yaml'
 phase_name = 'nDodecane_IG'
 comp_air = 'o2:1, n2:3.76'
-comp_fuel = 'c6h13co:1' #here we enter fuel type we want to compare
+comp_fuel = 'c6h12:1' #here we enter fuel type we want to compare
 
 f = 600. / 60.  # engine speed [1/s] (3000 rpm)
 V_H = .5e-3  # displaced volume [m**3]
@@ -68,7 +68,7 @@ stroke = V_H / A_piston
 
 def crank_angle(t):
     """Convert time to crank angle"""
-    return np.remainder(2 * np.pi * f * t, 4 * np.pi)
+    return np.remainder(2 * np.pi * f * t, 8 * np.pi)
 
 
 def piston_speed(t):
@@ -176,28 +176,46 @@ def ca_ticks(t):
 t = states.t
 
 # pressure and temperature diagram
-xticks = np.arange(0.08, 0.12, 0.002)
+xlim1 = 330
+xlim2 = xlim1 + 60
+xticks = np.arange(300, 420, 5)
+xminor = np.arange(300, 420, 0.5)
 fig, ax = plt.subplots(nrows=2)
-ax[0].plot(t, states.P / 1.e5)
+ax[0].plot(ca_ticks(t), states.P / 1.e5)
+ax[0].set_title('$C_6H_1$$_2$')
 ax[0].margins(x=-0.4)
 ax[0].set_ylabel('$p$ [bar]')
-ax[0].set_xlabel(r'$\phi$ [deg]')
+ax[0].set_xlabel(r'$\phi$ $[\degree]$')
 ax[0].set_xticks(xticks)
-ax[0].set_xticklabels(ca_ticks(xticks))
-ax[1].plot(t, states.T)
+ax[0].set_xticklabels(xticks)
+ax[0].set_xticks(xminor,minor=True)
+ax[0].set_yticks(np.arange(0,300,50))
+ax[0].set_yticks(np.arange(0,300,10),minor=True)
+ax[0].grid(which='major',linewidth=1)
+ax[0].grid(which='minor',linewidth=0.3)
+ax[0].set_xlim([xlim1,xlim2])
+ax[0].set_ylim([0,250])
+ax[1].plot(ca_ticks(t), states.T)
 ax[1].margins(x=-0.4)
 ax[1].set_ylabel('$T$ [K]')
-ax[1].set_xlabel(r'$\phi$ [deg]')
+ax[1].set_xlabel(r'$\phi$ $[\degree]$')
 ax[1].set_xticks(xticks)
-ax[1].set_xticklabels(ca_ticks(xticks))
+ax[1].set_xticklabels(xticks)
+ax[1].set_xticks(xminor,minor=True)
+ax[1].set_yticks(np.arange(0,3500,500))
+ax[1].set_yticks(np.arange(0,3500,100),minor=True)
+ax[1].grid(which='major',linewidth=1)
+ax[1].grid(which='minor',linewidth=0.3)
+ax[1].set_xlim([xlim1,xlim2])
+ax[1].set_ylim([500,3000])
 plt.show()
 
-# p-V diagram
-fig, ax = plt.subplots()
-ax.plot(states.V[t > 0.04] * 1000, states.P[t > 0.04] / 1.e5)
-ax.set_xlabel('$V$ [l]')
-ax.set_ylabel('$p$ [bar]')
-plt.show()
+## p-V diagram
+#fig, ax = plt.subplots()
+#ax.plot(states.V[t > 0.04] * 1000, states.P[t > 0.04] / 1.e5)
+#ax.set_xlabel('$V$ [l]')
+#ax.set_ylabel('$p$ [bar]')
+#plt.show()
 
 ## phi_V diagram
 #xticks = np.arange(0.05, 0.155, 0.005)
